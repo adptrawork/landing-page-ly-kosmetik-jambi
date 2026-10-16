@@ -1,158 +1,263 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/ui/Icon.astro';
 import Kicker from '../components/ui/Kicker.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
-import TrustStrip from '../components/ui/TrustStrip.astro';
+import ProductRow from '../components/ui/ProductRow.astro';
+import StoreInfo from '../components/ui/StoreInfo.astro';
 import Steps from '../components/ui/Steps.astro';
 import Faq from '../components/ui/Faq.astro';
-import Marquee from '../components/ui/Marquee.astro';
 import MapFacade from '../components/ui/MapFacade.astro';
-import ProductCard from '../components/ui/ProductCard.astro';
 import { business, products, waLink } from '../data/business';
-const heroCta = waLink(`Halo ${business.name}, apakah stok produk best seller ready?`);
-const katalogCta = "/katalog";
-const featured = products.slice(0, 4);
+import { groupedCatalog, groupOf } from '../data/catalog';
+
+const heroCta = waLink(`Halo ${business.name}, saya mau tanya stok produk grosir. Apakah ready?`);
+const catalogCta = waLink(`Halo ${business.name}, boleh minta daftar harga grosir lengkapnya?`);
 const embed = `https://maps.google.com/maps?q=${encodeURIComponent(business.mapsQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-const trust = [
-  { v: `${business.rating}/5.0`, l: `${business.reviewCount}+ ulasan Maps` },
-  { v: "BPOM", l: "Original 100%" },
-  { v: "WA", l: "Fast-respon admin" },
-  { v: "Alamat & jam: info menyusul", l: business.hours },
+
+const facts = [
+  { k: 'Isi katalog', v: `${products.length} jenis produk`, note: 'Skincare & perawatan harian' },
+  { k: 'Pemesanan', v: 'Via WhatsApp admin', note: 'Stok & harga dikonfirmasi admin' },
+  { k: 'Status harga', v: 'Estimasi', note: 'Info menyusul — belum final' },
 ];
-const marquee = ['BRIGHTENING', 'ACNE CARE', 'SUNSCREEN', 'LIP CARE', 'INFO MENYUSUL'];
+
 const steps = [
-  { t: "Pilih produk", d: "Jelajahi best seller atau buka katalog lengkap, catat nama dan estimasi harga." },
-  { t: "Chat via WhatsApp", d: "Kirim format pesanan rapi — admin konfirmasi stok dan harga final." },
-  { t: "Ambil / kirim", d: "Ambil langsung di toko atau atur pengiriman ojek online." },
+  { t: 'Pilih jenis produk', d: 'Telusuri daftar katalog bernomor di halaman ini atau buka Katalog untuk memfilter per kategori.' },
+  { t: 'Kirim pesan WhatsApp', d: 'Sebutkan nama produk dan jumlah yang dicari; admin memeriksa ketersediaan stok grosir.' },
+  { t: 'Konfirmasi harga & stok', d: 'Harga final dan cara pengambilan atau pengiriman dikonfirmasi admin via WhatsApp sebelum order.' },
 ];
+
 const faqs = [
-  { q: "Apakah produk di Ly original?", a: "Ya, produk original. Label Terverifikasi berarti data dicek dari sumber resmi brand; Estimasi berarti perkiraan — tanya sertifikasi BPOM tiap item via WA." },
-  { q: "Bagaimana cara pesan?", a: "Pilih produk di katalog, klik Pesan via WA, lalu kirim format pesanan. Admin mengonfirmasi stok dan harga final sebelum Anda datang." },
-  { q: "Apakah harga di web ini pasti?", a: "Belum — semua harga estimasi dan dapat berubah. Harga final selalu dikonfirmasi admin via WhatsApp." },
-  { q: "Jam buka dan alamatnya?", a: `Alamat, WA, dan jam operasional masih placeholder — info menyusul setelah verifikasi.` },
+  { q: 'Apakah harga di halaman ini sudah final?', a: 'Belum. Semua harga masih estimasi dan belum terverifikasi. Harga final selalu dikonfirmasi admin via WhatsApp sebelum order.' },
+  { q: 'Bagaimana cara memesan?', a: 'Pilih produk pada daftar katalog, tekan tombol Tanya via WA pada baris produk, lalu sebutkan nama produk dan jumlahnya.' },
+  { q: 'Di mana alamat dan jam bukanya?', a: 'Alamat, jam operasional, dan nomor admin masih placeholder (info menyusul). Sementara ini gunakan tombol WhatsApp atau pencarian lokasi di Google Maps.' },
+  { q: 'Apakah tersedia harga grosir?', a: 'Situs ini disiapkan sebagai katalog grosir. Ketentuan dan potongan jumlah besar belum terverifikasi; tanyakan langsung ke admin melalui WhatsApp.' },
 ];
 ---
-<!-- Ref: Awwwards Beauty nominees (Beauty Queen flagship, Soleil Noir Essentiality, Bridge Beauty SOTD): hero editorial besar + storytelling bahan + section ritual. | Dribbble Orvelia beauty shop + Musemind e-commerce: kategori masalah kulit, best-seller rail, badge BPOM, tutorial/guide. | Lapa Ninja beauty elements: hero CTA, value prop, features, visual, social proof, benefits, trust (BPOM/reseller), CTA berulang, kontak. -->
+
+<!-- Ref: utilitarian catalog, utility bar + hero asimetris + list bernomor + data mono -->
+
 <BaseLayout title={business.title} description={business.description} canonicalPath="/" image={business.ogImage}>
-  <!-- 01 Hero -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="hero-h">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
-      <div class="md:col-span-7">
-        <p class="flex flex-wrap items-center gap-2 text-sm font-medium text-sky-400">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8z"/></svg>
-          <span class="font-mono">{business.rating} • {business.reviewCount}+ ulasan</span>
-          <span class="text-zinc-500">• {business.category} • {business.city}</span>
+  <!-- 01 Hero asimetris (bukan hero center) -->
+  <section class="shell py-10 sm:py-14 md:py-20" aria-labelledby="hero-h">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-7">
+        <Kicker label="Katalog grosir · Kota Jambi" />
+        <h1
+          id="hero-h"
+          class="mt-4 max-w-[22ch] text-[2.1rem] font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl"
+        >
+          Katalog grosir kosmetik Ly Kosmetik Jambi
+        </h1>
+        <p class="mt-5 max-w-[62ch] text-base leading-relaxed text-ink/70">
+          {products.length} jenis produk skincare tersusun rapi sebagai daftar bernomor — dari rangkaian brightening, clay
+          mask, pelembap, serum, sunscreen, toner, sampai krim. Harga dan stok masih estimasi; konfirmasi tiap item
+          langsung via WhatsApp.
         </p>
-        <h1 id="hero-h" class="mt-4 text-4xl md:text-6xl tracking-tighter leading-[1.05] font-extrabold text-white">Ly Kosmetik Jambi — Info Toko Menyusul</h1>
-        <p class="mt-5 text-base text-zinc-400 leading-relaxed max-w-[65ch]">Alamat, WA, dan jam operasional resmi masih dalam verifikasi. Cari “Ly Kosmetik Jambi” di Google Maps atau tanya sementara via WhatsApp.</p>
+
         <div class="mt-8 flex flex-wrap gap-3">
-          <a href={heroCta} class="bg-sky-600 text-white inline-flex items-center justify-center px-7 min-h-[48px] rounded-full font-medium transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]" style="transition-timing-function:cubic-bezier(0.16,1,0.3,1)">Pesan via WhatsApp</a>
-          <a href={katalogCta} class="inline-flex items-center justify-center border border-white/20 hover:border-white text-white px-7 min-h-[48px] rounded-full font-medium transition-all duration-300 active:scale-[0.98]">Lihat Katalog</a>
+          <a
+            href={heroCta}
+            rel="noopener"
+            data-wa
+            class="inline-flex min-h-[48px] items-center justify-center gap-2 bg-accent px-6 text-sm font-medium text-paper transition-transform duration-200 hover:bg-ink active:scale-[0.98]"
+          >
+            <Icon name="whatsapp" size={17} />
+            <span>Tanya stok via WhatsApp</span>
+          </a>
+          <a
+            href="#katalog-list"
+            class="inline-flex min-h-[48px] items-center justify-center gap-2 border border-ink/25 px-6 text-sm font-medium text-ink transition-colors hover:border-ink active:scale-[0.98]"
+          >
+            <span>Lihat daftar katalog</span>
+            <Icon name="arrow" size={17} />
+          </a>
         </div>
-        <p class="mt-6 font-mono text-xs tracking-widest uppercase text-zinc-500">BPOM Original • WA fast-respon • {business.addressStatus}</p>
+
+        <p class="label mt-6">Status data: info menyusul — alamat, jam, dan nomor resmi belum terverifikasi</p>
       </div>
-      <div class="md:col-span-5">
-        <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6">
-          <div class="rounded-3xl overflow-hidden bg-zinc-100 aspect-[4/3] max-w-full">
-            <img src={business.ogImage} alt="{business.name} — etalase toko" width="800" height="600" loading="eager" fetchpriority="high" decoding="async" class="w-full h-full object-cover" />
-          </div>
-          <p class="mt-3 text-xs text-zinc-500">Foto: ilustrasi — ganti foto toko asli setelah verifikasi</p>
-          <p class="mt-4 text-lg font-semibold tracking-tight text-white">Katalog online — tanpa antre</p>
-          <p class="mt-2 text-base text-zinc-400 leading-relaxed">Katalog di bawah placeholder realistis + disclaimer — bukan acuan harga sampai data resmi terverifikasi.</p>
-        </div>
+
+      <div class="lg:col-span-5">
+        <figure>
+          <img
+            src={business.ogImage}
+            alt="Ilustrasi katalog produk skincare Ly Kosmetik Jambi"
+            width="800"
+            height="600"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="aspect-[4/3] w-full border border-sage object-cover"
+          />
+          <figcaption class="label mt-2">
+            Foto: ilustrasi katalog — ganti dengan foto toko asli setelah verifikasi
+          </figcaption>
+        </figure>
+
+        <dl class="mt-6 border-t border-sage">
+          {
+            facts.map((f) => (
+              <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-sage py-3">
+                <dt class="label">{f.k}</dt>
+                <dd class="num text-sm text-ink">
+                  {f.v}
+                  <span class="label ml-2">{f.note}</span>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
       </div>
     </div>
   </section>
 
-  <Marquee items={marquee} />
+  <!-- 02 Katalog sebagai list bernomor -->
+  <section class="shell py-10 sm:py-14" aria-labelledby="katalog-h">
+    <div id="katalog-list" class="scroll-mt-6">
+      <SectionHead
+        no="01"
+        kicker="Katalog"
+        title="Daftar produk bernomor"
+        desc={`${products.length} baris produk dengan jenis, harga estimasi, dan tombol tanya stok. Gunakan halaman Katalog untuk memfilter per kategori.`}
+        id="katalog-h"
+      />
+    </div>
 
-  <!-- 02 Trust strip -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-label="Kepercayaan toko">
-    <TrustStrip items={trust} />
-  </section>
+    <ol class="mt-8 border-b border-sage">
+      {products.map((p, i) => <ProductRow p={p} index={i} group={groupOf(p.name)} />)}
+    </ol>
 
-  <!-- 03 Belanja berdasar masalah kulit -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="s-masalah">
-    <div id="s-masalah"><SectionHead no="03" kicker="Belanja berdasar masalah" title="Mulai dari kebutuhan kulitmu" desc="Empat jalur cepat ke katalog — tiap produk berlabel Terverifikasi, Estimasi, atau Info menyusul." /></div>
-    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <a href="/katalog" class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6 block transition-all duration-300 hover:-translate-y-1">
-        <p class="font-mono text-xs tracking-[0.2em] text-sky-400">01</p>
-        <p class="mt-3 font-semibold text-lg tracking-tight text-white">Brightening</p>
-        <p class="mt-1 text-base text-zinc-400 leading-relaxed">Serum, moisturizer & toner untuk kulit kusam dan noda.</p>
-        <p class="mt-3 text-sm font-medium underline underline-offset-4 text-white">Lihat di katalog</p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <a
+        href="/katalog"
+        class="inline-flex min-h-[48px] items-center gap-2 border border-accent px-6 text-sm font-medium text-accent transition-colors hover:bg-accent hover:text-paper active:scale-[0.98]"
+      >
+        <span>Buka katalog dengan filter</span>
+        <Icon name="arrow" size={17} />
       </a>
-      <a href="/katalog" class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6 block transition-all duration-300 hover:-translate-y-1">
-        <p class="font-mono text-xs tracking-[0.2em] text-sky-400">02</p>
-        <p class="mt-3 font-semibold text-lg tracking-tight text-white">Acne & Calming</p>
-        <p class="mt-1 text-base text-zinc-400 leading-relaxed">Clay mask, serum & toner untuk jerawat dan kemerahan.</p>
-        <p class="mt-3 text-sm font-medium underline underline-offset-4 text-white">Lihat di katalog</p>
-      </a>
-      <a href="/katalog" class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6 block transition-all duration-300 hover:-translate-y-1">
-        <p class="font-mono text-xs tracking-[0.2em] text-sky-400">03</p>
-        <p class="mt-3 font-semibold text-lg tracking-tight text-white">Sunscreen & Daily</p>
-        <p class="mt-1 text-base text-zinc-400 leading-relaxed">Tabir surya dan perawatan harian ringan.</p>
-        <p class="mt-3 text-sm font-medium underline underline-offset-4 text-white">Lihat di katalog</p>
-      </a>
-      <a href="/katalog" class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6 block transition-all duration-300 hover:-translate-y-1">
-        <p class="font-mono text-xs tracking-[0.2em] text-sky-400">04</p>
-        <p class="mt-3 font-semibold text-lg tracking-tight text-white">Lip & Makeup</p>
-        <p class="mt-1 text-base text-zinc-400 leading-relaxed">Lip cream, bedak, dan riasan harian.</p>
-        <p class="mt-3 text-sm font-medium underline underline-offset-4 text-white">Lihat di katalog</p>
+      <a
+        href={catalogCta}
+        rel="noopener"
+        data-wa
+        class="inline-flex min-h-[48px] items-center text-sm text-ink underline decoration-rust decoration-1 underline-offset-4 hover:text-accent"
+      >
+        Minta daftar harga grosir via WA
       </a>
     </div>
   </section>
 
-  <!-- 04 Best seller -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="s-best">
-    <div id="s-best"><SectionHead no="04" kicker="Best seller" title="Produk paling dicari" desc={`Harga estimasi, konfirmasi via WA. Lihat semua ${products.length} produk di katalog.`} /></div>
-    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {featured.map((p) => (<ProductCard p={p} />))}
+  <!-- 03 Informasi toko ringkas -->
+  <section class="shell py-10 sm:py-14" aria-labelledby="toko-h">
+    <SectionHead
+      no="02"
+      kicker="Informasi toko"
+      title="Alamat, jam, dan kontak"
+      desc="Ringkasan data toko yang tersedia saat ini. Semua nilai placeholder ditampilkan apa adanya."
+      id="toko-h"
+    />
+    <div class="mt-8">
+      <StoreInfo />
     </div>
-    <a href="/katalog" class="mt-8 inline-flex items-center justify-center border border-white/20 hover:border-white text-white px-7 min-h-[48px] rounded-full font-medium">Lihat semua {products.length} produk</a>
   </section>
 
-  <!-- 05 Cara pesan -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="s-cara">
-    <div id="s-cara"><SectionHead no="05" kicker="Cara pesan" title="Pesan dalam 3 langkah" desc="Tanpa antre, tanpa ribet — semua order dikonfirmasi admin via WhatsApp." /></div>
-    <Steps steps={steps} />
+  <!-- 04 Kategori grosir -->
+  <section class="shell py-10 sm:py-14" aria-labelledby="kategori-h">
+    <SectionHead
+      no="03"
+      kicker="Kategori grosir"
+      title="Kelompok produk di katalog"
+      desc="Pengelompokan jenis produk untuk memudahkan permintaan grosir. Jumlah mengikuti isi katalog saat ini."
+      id="kategori-h"
+    />
+
+    <ol class="mt-8 border-t border-sage">
+      {
+        groupedCatalog.map((g, i) => (
+          <li class="reveal grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-baseline gap-x-4 border-b border-sage py-4 md:gap-x-8" style={`--i:${i}`}>
+            <span class="num text-sm text-accent">{String(i + 1).padStart(2, '0')}</span>
+            <span class="text-base font-medium tracking-tight text-ink">{g.name}</span>
+            <span class="num text-sm text-ink/55">{g.items.length} produk</span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="mt-4 text-sm leading-relaxed text-ink/65">
+      Ketersediaan tiap kategori belum terverifikasi —
+      <a href={catalogCta} rel="noopener" data-wa class="text-ink underline decoration-rust decoration-1 underline-offset-4 hover:text-accent">konfirmasi via WhatsApp</a>.
+    </p>
   </section>
 
-  <!-- 06 Testimoni + Maps -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="s-testimoni">
-    <div id="s-testimoni"><SectionHead no="06" kicker="Testimoni & lokasi" title="Kata pembeli, titik lokasinya" desc={`{business.address} — {business.hours}.`} /></div>
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div class="md:col-span-5">
-        <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6">
-          <p class="font-mono text-xs tracking-[0.2em] uppercase text-sky-400">ULASAN — MENYULUS</p>
-          <p class="mt-3 font-semibold text-lg tracking-tight text-white">Belum ada ulasan terverifikasi</p>
-          <p class="mt-1 text-base text-zinc-400 leading-relaxed">Bagian testimoni akan diisi setelah data resmi toko terverifikasi. Cek rute Maps di samping.</p>
-        </div>
-      </div>
-      <div class="md:col-span-7">
+  <!-- 05 Cara order -->
+  <section class="shell py-10 sm:py-14" aria-labelledby="cara-h">
+    <SectionHead
+      no="04"
+      kicker="Cara order"
+      title="Tiga langkah pemesanan"
+      desc="Semua permintaan dikonfirmasi admin via WhatsApp sebelum diproses."
+      id="cara-h"
+    />
+    <div class="mt-8">
+      <Steps steps={steps} />
+    </div>
+  </section>
+
+  <!-- 06 Lokasi & kontak -->
+  <section class="shell py-10 sm:py-14" aria-labelledby="lokasi-h">
+    <SectionHead
+      no="05"
+      kicker="Lokasi & kontak"
+      title="Temukan dan hubungi toko"
+      desc="Peta dimuat setelah diklik agar halaman tetap ringan. Alamat pasti masih placeholder."
+      id="lokasi-h"
+    />
+    <div class="mt-8 grid gap-8 lg:grid-cols-12">
+      <div class="lg:col-span-7">
         <MapFacade embed={embed} />
-        <p class="mt-3 text-xs text-zinc-500">{business.address} — {business.hours}</p>
+      </div>
+      <div class="lg:col-span-5">
+        <dl class="border-t border-sage">
+          <div class="flex gap-6 border-b border-sage py-3">
+            <dt class="label w-24 shrink-0 pt-0.5">Alamat</dt>
+            <dd class="text-sm text-ink/80">{business.address}</dd>
+          </div>
+          <div class="flex gap-6 border-b border-sage py-3">
+            <dt class="label w-24 shrink-0 pt-0.5">Jam</dt>
+            <dd class="text-sm text-ink/80">{business.hours} — {business.hoursStatus}</dd>
+          </div>
+          <div class="flex gap-6 border-b border-sage py-3">
+            <dt class="label w-24 shrink-0 pt-0.5">WhatsApp</dt>
+            <dd class="num text-sm text-ink/80">{business.phoneDisplay}</dd>
+          </div>
+        </dl>
         <div class="mt-6 flex flex-wrap gap-3">
-          <a href={business.mapsUrl} class="inline-flex items-center justify-center border border-white/20 hover:border-white text-white px-6 min-h-[48px] rounded-full text-sm font-medium">Buka di Google Maps</a>
-          <a href={heroCta} class="bg-sky-600 text-white inline-flex items-center justify-center px-6 min-h-[48px] rounded-full text-sm font-medium">Tanya stok via WA</a>
+          <a
+            href={heroCta}
+            rel="noopener"
+            data-wa
+            class="inline-flex min-h-[48px] items-center gap-2 bg-accent px-6 text-sm font-medium text-paper transition-transform duration-200 hover:bg-ink active:scale-[0.98]"
+          >
+            <Icon name="whatsapp" size={17} />
+            <span>Chat WhatsApp</span>
+          </a>
+          <a
+            href={business.mapsUrl}
+            rel="noopener"
+            class="inline-flex min-h-[48px] items-center gap-2 border border-ink/25 px-6 text-sm font-medium text-ink transition-colors hover:border-ink active:scale-[0.98]"
+          >
+            <Icon name="pin" size={17} />
+            <span>Cari di Maps</span>
+          </a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- 07 FAQ -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="s-faq">
-    <div id="s-faq"><SectionHead no="07" kicker="FAQ" title="Sering ditanyakan" desc="Jawaban singkat sebelum chat admin." /></div>
-    <Faq items={faqs} />
-  </section>
-
-  <!-- 08 Final CTA -->
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="s-cta">
-    <Kicker no="08" label="Siap order" />
-    <h2 id="s-cta" class="mt-2 text-3xl md:text-4xl tracking-tighter leading-tight font-extrabold text-white max-w-[20ch]">Siap pesan tanpa antre?</h2>
-    <p class="mt-3 text-base text-zinc-400 leading-relaxed max-w-[65ch]">Kirim format pesanan rapi via WhatsApp ({business.phoneDisplay}). Jelajahi <a class="underline underline-offset-4 text-white" href="/katalog">katalog</a>, <a class="underline underline-offset-4 text-white" href="/promo">promo</a>, dan <a class="underline underline-offset-4 text-white" href="/tentang">info toko</a>.</p>
-    <div class="mt-6 flex flex-wrap gap-3">
-      <a href={heroCta} class="bg-sky-600 text-white inline-flex items-center justify-center px-8 min-h-[48px] rounded-full font-medium transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]">Chat WhatsApp Sekarang</a>
-      <a href="/katalog" class="inline-flex items-center justify-center border border-white/20 hover:border-white text-white px-8 min-h-[48px] rounded-full font-medium">Lihat Katalog</a>
+  <section class="shell py-10 sm:py-14" aria-labelledby="faq-h">
+    <SectionHead no="06" kicker="FAQ" title="Sering ditanyakan" desc="Jawaban singkat sebelum menghubungi admin." id="faq-h" />
+    <div class="mt-8">
+      <Faq items={faqs} />
     </div>
   </section>
 </BaseLayout>

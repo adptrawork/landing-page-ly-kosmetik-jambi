@@ -1,66 +1,212 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root { --ease-premium: cubic-bezier(0.16, 1, 0.3, 1); }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
-  background: #09090b; color: #f4f4f5;
-  -webkit-font-smoothing: antialiased;
-}
-.font-mono-num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-.reveal { animation: rise 0.7s var(--ease-premium) both; }
-.d-1 { animation-delay: 0.06s; } .d-2 { animation-delay: 0.12s; }
-.d-3 { animation-delay: 0.18s; } .d-4 { animation-delay: 0.24s; }
-.d-5 { animation-delay: 0.3s; } .d-6 { animation-delay: 0.36s; }
-@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-/* text mask reveal — photo clipped into H1 via background-clip */
-.mask-text {
-  background-image: url('/images/ly-hero.jpg');
-  background-size: cover; background-position: center;
-  -webkit-background-clip: text; background-clip: text;
-  color: transparent; -webkit-text-fill-color: transparent;
-  animation: maskpan 18s ease-in-out infinite alternate;
-}
-@keyframes maskpan { from { background-position: 20% 30%; } to { background-position: 80% 70%; } }
-/* inner refraction for dark cards */
-.refract { position: relative; }
-.refract::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0) 45%);
-}
-@media (prefers-reduced-motion: reduce) { .reveal, .mask-text { animation: none; } html { scroll-behavior: auto; } }
+/* ==========================================================================
+   LY Kosmetik Jambi — katalog utilitarian
+   Palet: paper #F6F5F0 / ink #242620 / sage #CBD8C9 / accent #27483B / rust #A94C2B
+   Font: Switzer (display + UI) + DM Mono (angka, harga, label teknis)
+   ========================================================================== */
 
-/* ==== overhaul: responsive guard + shared components (CSS-only, tanpa dep baru) ==== */
-html, body { max-width: 100%; overflow-x: clip; }
-img { max-width: 100%; height: auto; }
-.marquee { overflow: hidden; max-width: 100%; }
-.marquee-track { display: inline-flex; gap: 2.5rem; padding-right: 2.5rem; animation: slide 22s linear infinite; will-change: transform; }
-@keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-/* hamburger CSS-only: menu slide-down */
-.nav-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s cubic-bezier(0.16,1,0.3,1); }
-.nav-panel > div { overflow: hidden; min-height: 0; }
-#nav-toggle:checked ~ div .icon-open { display: none; }
-#nav-toggle:checked ~ div .icon-close { display: block; }
-#nav-toggle:checked ~ .nav-panel { grid-template-rows: 1fr; }
-/* katalog skeleton shimmer */
-.skeleton { position: relative; overflow: hidden; background: rgba(127,127,127,0.14); }
-.skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent); animation: shimmer 1.4s infinite; }
-@keyframes shimmer { to { transform: translateX(100%); } }
-/* FAQ details */
-details.faq { border-radius: 1.5rem; }
-details.faq summary { cursor: pointer; list-style: none; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-details.faq summary::-webkit-details-marker { display: none; }
-details.faq summary .plus { transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); flex: none; }
-details.faq[open] summary .plus { transform: rotate(45deg); }
-/* form: target sentuh + error text */
-input, select, textarea { min-height: 48px; }
-.field-err { display: none; }
-.field-invalid .field-err { display: block; }
-/* tabel: wrapper scroll-x */
-.table-wrap { overflow-x: auto; max-width: 100%; }
-/* cegah teks terpotong di kartu */
-.card-clamp { overflow-wrap: anywhere; }
-@media (prefers-reduced-motion: reduce) { .marquee-track, .skeleton::after { animation: none; } }
+:root {
+  --paper: #F6F5F0;
+  --ink: #242620;
+  --ink-soft: rgba(36, 38, 32, 0.62);
+  --sage: #CBD8C9;
+  --accent: #27483B;
+  --rust: #A94C2B;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  body {
+    font-family: 'Switzer', ui-sans-serif, system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  ::selection {
+    background: var(--sage);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* wrapper kolom tunggal — dipakai semua section */
+  .shell {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 70rem;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .shell {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  /* label teknis: mono kecil, huruf kapital, spasi lebar */
+  .label {
+    font-family: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* nomor & harga selalu mono */
+  .num {
+    font-family: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  /* marker rust mikro: underline tipis pada label kecil */
+  .mark {
+    text-decoration: underline;
+    text-decoration-color: var(--rust);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .rule {
+    border-top: 1px solid var(--sage);
+  }
+}
+
+/* --- animasi minimal: hanya transform + opacity, stagger via --i --- */
+.reveal {
+  animation: rise 0.5s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- navigasi mobile CSS-only (tanpa JS untuk buka/tutup) --- */
+.nav-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s var(--ease);
+}
+
+.nav-panel > div {
+  overflow: hidden;
+  min-height: 0;
+}
+
+#nav-toggle:checked ~ .nav-bar .icon-open {
+  display: none;
+}
+
+#nav-toggle:checked ~ .nav-bar .icon-close {
+  display: block;
+}
+
+#nav-toggle:checked ~ .nav-panel {
+  grid-template-rows: 1fr;
+}
+
+/* --- detail FAQ --- */
+details.faq summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+details.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+details.faq summary .plus {
+  transition: transform 0.3s var(--ease);
+  flex: none;
+}
+
+details.faq[open] summary .plus {
+  transform: rotate(45deg);
+}
+
+/* --- target sentuh --- */
+input,
+select,
+textarea,
+button {
+  min-height: 44px;
+}
+
+/* --- validasi form: pesan error jelas, marker rust mikro --- */
+.field-err {
+  display: none;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.field-err::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  background: var(--rust);
+}
+
+.field-invalid .field-err {
+  display: block;
+}
+
+.field-invalid input,
+.field-invalid textarea {
+  border-color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    animation: none;
+  }
+  .nav-panel {
+    transition: none;
+  }
+  details.faq summary .plus {
+    transition: none;
+  }
+}

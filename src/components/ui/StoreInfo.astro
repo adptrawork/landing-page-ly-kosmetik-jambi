@@ -1,0 +1,32 @@
+---
+import { business, socials } from '../../data/business';
+
+// Data publik belum terverifikasi: nilai placeholder ditampilkan apa adanya,
+// tanpa mengisi alamat/harga/jam karangan.
+const rows = [
+  { k: 'Alamat', v: business.address, status: `Status: ${business.addressStatus}` },
+  { k: 'Jam operasional', v: business.hours, status: `Status: ${business.hoursStatus} — rincian jam per hari menyusul` },
+  { k: 'Telepon / WhatsApp', v: business.phoneDisplay, status: 'Status: info menyusul — nomor admin belum terverifikasi' },
+  { k: 'Instagram', v: business.instagramLabel, status: socials[0]?.note ?? '' },
+];
+---
+
+<!-- Ref: informasi toko ringkas sebagai <dl> ber-rule, bukan kartu berbayar-bayang -->
+<dl class="border-t border-sage">
+  {
+    rows.map((r) => (
+      <div class="grid gap-1 border-b border-sage py-4 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
+        <dt class="label">{r.k}</dt>
+        <dd class="text-ink/80">
+          {r.v}
+          {r.status && <span class="label mt-1 block">{r.status}</span>}
+        </dd>
+      </div>
+    ))
+  }
+</dl>
+
+<p class="mt-4 text-sm leading-relaxed text-ink/65">
+  Data di atas masih placeholder (<span class="mark">info menyusul</span>) dan belum terverifikasi. Konfirmasi alamat,
+  jam, dan ketersediaan produk via WhatsApp sebelum berkunjung atau memesan.
+</p>

@@ -1,41 +1,117 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/ui/Icon.astro';
 import Kicker from '../components/ui/Kicker.astro';
+import SectionHead from '../components/ui/SectionHead.astro';
 import Steps from '../components/ui/Steps.astro';
 import { business, promos, waLink } from '../data/business';
+
+const title = 'Promo & Grosir Ly Kosmetik Jambi — Info Terbaru';
+const description = `Halaman promo ${business.name}: status tier promo, alur klaim, dan catatan harga. Semua promo masih info menyusul — konfirmasi sebelum order via WhatsApp.`;
+
 const steps = [
-  { t: "Pilih tier promo", d: "Cocokkan kebutuhan dengan tier di bawah — catat judul promonya." },
-  { t: "Klik klaim via WA", d: "Tombol klaim mengisi format chat otomatis berisi judul promo." },
-  { t: "Konfirmasi admin", d: "Admin memastikan promo masih berlaku dan harga final." },
+  { t: 'Catat tier promo', d: 'Tandai nomor dan judul tier yang ingin diklaim dari daftar di atas.' },
+  { t: 'Kirim klaim via WhatsApp', d: 'Tombol klaim membuka WhatsApp dengan judul promo yang sudah terisi otomatis.' },
+  { t: 'Tunggu konfirmasi admin', d: 'Admin memastikan promo masih berlaku, harga final, dan ketersediaan stok.' },
 ];
 ---
-<BaseLayout title={`Promo — ${business.title}`} description={`Promo ${business.name}: bundling hemat & program reseller. Estimasi, konfirmasi WA.`} canonicalPath="/promo" image={business.ogImage}>
-  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="promo-h">
-    <Kicker no="Promo" label="{promos.length} tier aktif" />
-    <h1 id="promo-h" class="mt-2 text-4xl md:text-6xl tracking-tighter leading-[1.05] font-extrabold text-white max-w-[20ch]">Bundling & promo {business.name}</h1>
-    <p class="mt-3 text-base text-zinc-400 leading-relaxed max-w-[65ch]">Semua promo estimasi mengikuti info toko — harga final wajib konfirmasi via WA sebelum order.</p>
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-12 gap-6">
-      {promos.map((m, i) => (
-        <div class={i === 0 ? "md:col-span-7" : i === 1 ? "md:col-span-5" : "md:col-span-12"}>
-          <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6 md:!p-10 transition-all duration-300 hover:-translate-y-1 h-full">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="font-mono text-xs tracking-[0.2em] uppercase text-sky-400">Tier 0{i + 1}</p>
-              <p class="font-mono text-xs tracking-widest uppercase text-zinc-500">{m.status}</p>
-            </div>
-            <h2 class="mt-2 font-semibold text-xl tracking-tight text-white">{m.title}</h2>
-            <p class="mt-2 text-base text-zinc-400 leading-relaxed max-w-[65ch]">{m.desc}</p>
-            <a href={waLink(`Halo ${business.name}, saya mau klaim promo: ${m.title}. Apakah masih berlaku?`)} class="mt-5 inline-flex items-center justify-center bg-white text-zinc-950 px-6 min-h-[48px] rounded-full text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]">Klaim via WA</a>
-          </div>
-        </div>
-      ))}
+
+<!-- Ref: utilitarian catalog, promo sebagai list bernomor ber-rule (bukan kartu) -->
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath="/promo"
+  image={business.ogImage}
+  breadcrumbs={[{ name: 'Beranda', path: '/' }, { name: 'Promo', path: '/promo' }]}
+>
+  <section class="shell py-10 sm:py-14 md:py-16" aria-labelledby="promo-h">
+    <Kicker no="Promo" label={`${promos.length} tier — status menyusul`} />
+    <h1
+      id="promo-h"
+      class="mt-4 max-w-[24ch] text-[2.1rem] font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl"
+    >
+      Promo & harga grosir Ly Kosmetik Jambi
+    </h1>
+    <p class="mt-5 max-w-[62ch] text-base leading-relaxed text-ink/70">
+      Belum ada promo resmi yang terverifikasi. Daftar di bawah adalah kerangka tier yang akan diperbarui setelah data
+      toko terkonfirmasi — harga final selalu dikonfirmasi admin via WhatsApp.
+    </p>
+  </section>
+
+  <!-- 01 Daftar tier promo -->
+  <section class="shell pb-10 sm:pb-14" aria-labelledby="tier-h">
+    <div class="border-t border-ink/15 pt-6">
+      <SectionHead
+        no="01"
+        kicker="Tier promo"
+        title="Daftar promo"
+        desc="Setiap baris menampilkan status, judul, dan tombol klaim. Status menyusul berarti belum ada data resmi."
+        id="tier-h"
+      />
     </div>
-    <div class="mt-12">
-      <h2 class="font-mono text-xs tracking-[0.2em] uppercase text-sky-400">CARA KLAIM</h2>
+
+    <ol class="mt-8 border-t border-sage">
+      {
+        promos.map((m, i) => (
+          <li class="reveal border-b border-sage" style={`--i:${i}`}>
+            <div class="grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3 py-5 md:grid-cols-[2.25rem_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:py-6">
+              <span class="num pt-1 text-xs text-ink/45 md:pt-0">{String(i + 1).padStart(2, '0')}</span>
+              <div class="min-w-0">
+                <p class="label">Status: {m.status}</p>
+                <h2 class="mt-1 text-[1.0625rem] font-medium leading-snug tracking-tight text-ink">{m.title}</h2>
+                <p class="mt-1 max-w-[62ch] text-sm leading-relaxed text-ink/65">{m.desc}</p>
+              </div>
+              <a
+                href={waLink(`Halo ${business.name}, saya mau tanya promo: ${m.title}. Apakah masih berlaku?`)}
+                rel="noopener"
+                data-wa
+                class="col-span-2 inline-flex min-h-[44px] items-center justify-center gap-2 border border-ink/25 px-4 text-sm font-medium text-ink transition-colors hover:border-accent hover:bg-accent hover:text-paper active:scale-[0.98] md:col-span-1 md:justify-self-end"
+              >
+                <span>Klaim via WA</span>
+                <Icon name="arrow" size={16} />
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- 02 Cara klaim -->
+  <section class="shell pb-10 sm:pb-14" aria-labelledby="klaim-h">
+    <div class="border-t border-ink/15 pt-6">
+      <SectionHead no="02" kicker="Cara klaim" title="Alur klaim promo" id="klaim-h" />
+    </div>
+    <div class="mt-8">
       <Steps steps={steps} />
     </div>
-    <div class="mt-8 bg-sky-950 border border-white/10 rounded-[2rem] p-8">
-      <h2 class="font-semibold text-lg tracking-tight text-white">Disclaimer</h2>
-      <p class="mt-2 text-base text-zinc-400 leading-relaxed max-w-[65ch]">Harga dapat berubah, konfirmasi via WA toko. Promo dapat berakhir sewaktu-waktu mengikuti kebijakan toko. Screenshot halaman ini bukan bukti klaim harga.</p>
+  </section>
+
+  <!-- 03 Catatan -->
+  <section class="shell pb-14 sm:pb-20" aria-labelledby="catatan-h">
+    <div class="border-t border-ink/15 pt-6">
+      <h2 id="catatan-h" class="text-xl font-semibold tracking-tight text-ink sm:text-2xl">Catatan penting</h2>
+      <ul class="mt-5 border-t border-sage">
+        <li class="border-b border-sage py-3 text-sm leading-relaxed text-ink/70">
+          Harga dapat berubah — konfirmasi via WhatsApp toko sebelum order.
+        </li>
+        <li class="border-b border-sage py-3 text-sm leading-relaxed text-ink/70">
+          Promo dapat berakhir sewaktu-waktu mengikuti kebijakan toko.
+        </li>
+        <li class="border-b border-sage py-3 text-sm leading-relaxed text-ink/70">
+          Tangkapan layar halaman ini bukan bukti klaim harga.
+        </li>
+      </ul>
+      <p class="mt-6 text-sm leading-relaxed text-ink/65">
+        Butuh info cepat?
+        <a
+          href={waLink(`Halo ${business.name}, boleh info promo dan harga grosir terbaru?`)}
+          rel="noopener"
+          data-wa
+          class="text-ink underline decoration-rust decoration-1 underline-offset-4 hover:text-accent">Tanya promo via WhatsApp</a
+        >.
+      </p>
     </div>
   </section>
 </BaseLayout>

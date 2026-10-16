@@ -1,5 +1,13 @@
 ---
-interface Props { no: string; label: string; }
-const { no, label } = Astro.props;
+interface Props {
+  label: string;
+  no?: string;
+}
+const { label, no } = Astro.props;
 ---
-<p class="font-mono text-xs tracking-[0.2em] uppercase text-sky-400">{no} — {label}</p>
+
+<p class="label flex flex-wrap items-center gap-2">
+  {no && <span class="num text-accent">{no}</span>}
+  <span class="h-px w-5 bg-ink/30" aria-hidden="true"></span>
+  <span>{label}</span>
+</p>

@@ -1,13 +1,47 @@
 ---
-interface Props { title: string; description: string; canonicalUrl: string; image?: string; }
 import { business } from '../data/business';
-const { title, description, canonicalUrl, image = business.ogImage } = Astro.props;
+
+interface Breadcrumb { name: string; path: string }
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  image?: string;
+  breadcrumbs?: Breadcrumb[];
+}
+
+const { title, description, canonicalUrl, image = business.ogImage, breadcrumbs = [{ name: 'Beranda', path: '/' }] } = Astro.props;
 const ogImage = new URL(image, Astro.site ?? Astro.url).toString();
-const faq = [
-  { q: 'Di mana alamat Ly Kosmetik Jambi?', a: 'Alamat resmi masih menyusul dan belum terverifikasi publik. Cari Ly Kosmetik Jambi di Google Maps atau tanya via WA sementara.' },
-  { q: 'Apakah harga di website ini final?', a: 'Belum. Semua produk masih placeholder realistis dengan disclaimer. Jangan jadikan acuan harga sebelum info resmi update.' },
-  { q: 'Bagaimana cara bantu verifikasi info toko?', a: 'Kenal pemilik Ly Kosmetik? Minta update info resmi alamat, WA, dan jam via WA sementara agar halaman ini akurat.' },
-];
+const siteUrl = (Astro.site?.toString() ?? canonicalUrl).replace(/\/$/, '');
+
+// Hanya data yang benar-benar ada di sumber yang dimasukkan ke structured data.
+// Alamat jalan, jam operasional, dan rating sengaja dihilangkan karena belum terverifikasi.
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: business.name,
+  url: siteUrl,
+  image: ogImage,
+  description,
+  areaServed: { '@type': 'City', name: business.city },
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: business.city,
+    addressRegion: 'Jambi',
+    addressCountry: 'ID',
+  },
+};
+
+const breadcrumbList = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((b, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: b.name,
+    item: `${siteUrl}${b.path}`,
+  })),
+};
 ---
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -24,23 +58,35 @@ const faq = [
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
 <meta property="og:locale" content="id_ID" />
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={canonicalUrl} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={ogImage} />
-<script type="application/ld+json" set:html={JSON.stringify({
-  "@context": "https://schema.org", "@type": "Store",
-  name: business.name, url: Astro.site?.toString(), image: ogImage, description: description,
-  address: { "@type": "PostalAddress", addressLocality: business.city, addressRegion: "Jambi", addressCountry: "ID" },
-  openingHoursSpecification: { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "09:00", closes: "21:00" },
-  aggregateRating: { "@type": "AggregateRating", ratingValue: business.rating, reviewCount: business.reviewCount }
-})} />
-<script type="application/ld+json" set:html={JSON.stringify({
-  "@context": "https://schema.org", "@type": "FAQPage",
-  mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } }))
-})} />
+<meta property="og:site_name" content={business.name} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="theme-color" content="#F6F5F0" />
+
+<script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbList)} />
+
+<!-- Font non-blocking: Switzer (Fontshare) + DM Mono (Google Fonts), display=swap -->
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" /></noscript>
+<link
+  rel="stylesheet"
+  href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<noscript>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" />
+</noscript>
