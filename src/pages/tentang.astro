@@ -1,43 +1,86 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Kicker from '../components/ui/Kicker.astro';
+import MapFacade from '../components/ui/MapFacade.astro';
 import { business, socials, storeNotes, waLink } from '../data/business';
 const embed = `https://maps.google.com/maps?q=${encodeURIComponent(business.mapsQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-const cta = waLink(`Halo ${business.name}, saya mau tanya info toko.`);
+const cta = waLink(`Halo ${business.name}, saya mau tanya rute dan stok produk.`);
 ---
-<BaseLayout title={`Tentang — ${business.title}`} description={`Status info ${business.name}: alamat & kontak menyusul, cara verifikasi & WA sementara.`} canonicalPath="/tentang" image={business.ogImage}>
-  <section class="max-w-7xl mx-auto px-4 py-12 w-full min-h-[70dvh]">
-    <p class="text-sm font-medium text-sky-500 reveal">Tentang — Info Menyusul</p>
-    <h1 class="mt-2 text-4xl md:text-6xl tracking-tighter leading-none font-extrabold text-white max-w-[20ch] reveal d-1">{business.name}</h1>
-    <p class="mt-3 text-base text-zinc-400 leading-relaxed max-w-[65ch]">Belum ada data publik terverifikasi. Semua status jujur di bawah — bukan disembunyikan.</p>
+<BaseLayout title={`Tentang — ${business.title}`} description={`Alamat, jam & kontak ${business.name}: rute Maps & WA admin.`} canonicalPath="/tentang" image={business.ogImage}>
+  <section class="max-w-7xl mx-auto px-4 w-full py-12 md:py-20" aria-labelledby="tentang-h">
+    <Kicker no="Tentang" label="{business.category} — {business.city}" />
+    <h1 id="tentang-h" class="mt-2 text-4xl md:text-6xl tracking-tighter leading-[1.05] font-extrabold text-white max-w-[20ch]">{business.name}</h1>
+    <p class="mt-4 text-base text-zinc-400 leading-relaxed max-w-[65ch]">Data publik Ly Kosmetik Jambi belum terverifikasi: alamat, nomor WhatsApp, dan jam operasional masih placeholder. Produk dan promo di situs ini contoh realistis + disclaimer dan bukan acuan harga sampai info resmi tersedia.</p>
     <div class="mt-8 grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div class="md:col-span-7 reveal d-2">
-        <div class="refract bg-zinc-900 border border-white/10 rounded-[2rem] overflow-hidden">
-          <div class="aspect-video bg-zinc-800"><iframe title={`Peta ${business.name}`} src={embed} loading="lazy" class="w-full h-full opacity-80"></iframe></div>
-          <div class="p-8">
-            <h2 class="font-bold text-white tracking-tight text-lg">Alamat & Jam (menyusul)</h2>
-            <p class="mt-3 text-base text-zinc-400 leading-relaxed">{business.address}</p>
-            <p class="mt-1 text-xs font-medium text-sky-500">Alamat: {business.addressStatus}</p>
-            <p class="mt-4 text-base text-zinc-400">{business.hours}</p>
-            <p class="mt-1 text-xs font-medium text-sky-500">Jam: {business.hoursStatus}</p>
-            <div class="mt-6 flex flex-wrap gap-3">
-              <a href={cta} class="bg-sky-700 text-white px-6 py-3 rounded-full text-sm font-medium active:scale-[0.98]">Tanya via WA</a>
-              <a href={business.mapsUrl} class="border border-white/20 text-white px-6 py-3 rounded-full text-sm font-medium active:scale-[0.98]">Cari di Maps</a>
-            </div>
+      <div class="md:col-span-5 flex flex-col gap-6">
+        <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6">
+          <h2 class="font-semibold text-lg tracking-tight text-white">Alamat & jam</h2>
+          <p class="mt-3 text-base text-zinc-400 leading-relaxed">{business.address}</p>
+          <p class="mt-1 font-mono text-xs tracking-widest uppercase text-sky-400">Alamat: {business.addressStatus}</p>
+          <p class="mt-4 text-base text-zinc-400">{business.hours}</p>
+          <p class="mt-1 font-mono text-xs tracking-widest uppercase text-sky-400">Jam: {business.hoursStatus}</p>
+          <p class="mt-4 text-base text-zinc-400">Telp/WA: {business.phoneDisplay}</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href={cta} class="bg-sky-600 text-white inline-flex items-center justify-center px-6 min-h-[48px] rounded-full text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]">Chat WhatsApp</a>
+            <a href={business.mapsUrl} class="inline-flex items-center justify-center border border-white/20 hover:border-white text-white px-6 min-h-[48px] rounded-full text-sm font-medium transition-all active:scale-[0.98]">Cari di Maps</a>
           </div>
         </div>
-      </div>
-      <div class="md:col-span-5 flex flex-col gap-6 reveal d-3">
-        <div class="refract bg-zinc-900 border border-white/10 rounded-[2rem] p-8">
-          <h2 class="font-bold text-white tracking-tight text-lg">Akun Resmi</h2>
-          <ul class="mt-3 flex flex-col gap-2 text-sm text-zinc-400">{socials.map((s) => (<li><a href={s.url} class="underline underline-offset-4 text-white">{s.label}</a> <span>— {s.note}</span></li>))}</ul>
+        <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6">
+          <h2 class="font-semibold text-lg tracking-tight text-white">Tanya stok cepat</h2>
+          <p class="mt-1 text-sm text-zinc-400">Isi form — chat WhatsApp terisi otomatis.</p>
+          <form id="wa-form" class="mt-4 flex flex-col gap-3" novalidate>
+            <div id="f-nama-wrap">
+              <label for="f-nama" class="text-sm font-medium text-white">Nama</label>
+              <input id="f-nama" name="nama" type="text" autocomplete="name" placeholder="Nama kamu" class="mt-1 w-full rounded-2xl px-4 bg-zinc-900 border border-white/20 text-white" />
+              <p class="field-err mt-1 text-sm text-red-500">Nama wajib diisi (min. 2 huruf).</p>
+            </div>
+            <div id="f-pesan-wrap">
+              <label for="f-pesan" class="text-sm font-medium text-white">Kebutuhan</label>
+              <textarea id="f-pesan" name="pesan" rows="3" placeholder="Contoh: stok sunscreen + harga grosir" class="mt-1 w-full rounded-2xl px-4 py-3 bg-zinc-900 border border-white/20 text-white"></textarea>
+              <p class="field-err mt-1 text-sm text-red-500">Tulis kebutuhanmu dulu (min. 5 karakter).</p>
+            </div>
+            <button type="submit" class="bg-sky-600 text-white inline-flex items-center justify-center px-6 min-h-[48px] rounded-full text-sm font-medium active:scale-[0.98]">Kirim via WhatsApp</button>
+          </form>
         </div>
-        <div class="refract bg-zinc-900 border border-dashed border-white/20 rounded-[2rem] p-8 text-center">
-          <svg class="mx-auto text-zinc-500" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11h6"/></svg>
-          <h2 class="mt-3 font-bold text-white tracking-tight">Catatan Keterbukaan</h2>
-          <ul class="mt-3 text-sm text-zinc-400 leading-relaxed list-disc pl-5 text-left">{storeNotes.map((n) => (<li>{n}</li>))}</ul>
-          <a href={cta} class="mt-5 inline-block bg-sky-700 text-white px-6 py-3 rounded-full text-sm font-medium active:scale-[0.98]">Bantu Verifikasi</a>
+        <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6">
+          <h2 class="font-semibold text-lg tracking-tight text-white">Akun resmi</h2>
+          <ul class="mt-3 flex flex-col gap-2 text-sm text-zinc-400">
+            {socials.map((x) => (<li><a href={x.url} class="underline underline-offset-4 text-white min-h-[48px] inline-flex items-center">{x.label}</a> <span class="text-zinc-500">— {x.note}</span></li>))}
+          </ul>
+        </div>
+      </div>
+      <div class="md:col-span-7">
+        <MapFacade embed={embed} />
+        <p class="mt-3 text-xs text-zinc-500">{business.address} — {business.hours}</p>
+        <div class="mt-6 bg-zinc-900 border border-white/10 rounded-[2.5rem] p-6">
+          <h2 class="font-semibold text-lg tracking-tight text-white">Catatan toko</h2>
+          <ul class="mt-3 text-base text-zinc-400 leading-relaxed list-disc pl-5">
+            {storeNotes.map((n) => (<li>{n}</li>))}
+          </ul>
+          <p class="mt-4 text-sm text-zinc-500">Harga dapat berubah, konfirmasi via WA toko.</p>
         </div>
       </div>
     </div>
   </section>
+  <script define:vars={{ storePhone: business.phone, storeName: business.name }}>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('wa-form');
+      const nama = document.getElementById('f-nama');
+      const pesan = document.getElementById('f-pesan');
+      const wNama = document.getElementById('f-nama-wrap');
+      const wPesan = document.getElementById('f-pesan-wrap');
+      if (form) form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const n = (nama.value || '').trim();
+        const p = (pesan.value || '').trim();
+        const okN = n.length >= 2;
+        const okP = p.length >= 5;
+        if (wNama) wNama.classList.toggle('field-invalid', !okN);
+        if (wPesan) wPesan.classList.toggle('field-invalid', !okP);
+        if (!okN || !okP) { (!okN ? nama : pesan).focus(); return; }
+        const text = encodeURIComponent(`Halo ${storeName}, saya ${n}. ${p}`);
+        window.open(`https://wa.me/${storePhone}?text=${text}`, '_blank', 'noopener');
+      });
+    });
+  </script>
 </BaseLayout>
