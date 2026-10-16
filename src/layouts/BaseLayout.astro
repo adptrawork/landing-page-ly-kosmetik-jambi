@@ -6,7 +6,7 @@ interface Props { title: string; description: string; canonicalPath?: string; im
 const { title, description, canonicalPath = '/', image } = Astro.props;
 const site = (Astro.site?.toString() ?? 'https://lykosmetik-jambi.pages.dev').replace(/\/$/, '');
 const canonicalUrl = `${site}${canonicalPath}`;
-const cta = waLink(`Halo ${business.name}, saya mau tanya stok produk. Apakah ready?`);
+const cta = waLink(`Halo ${business.name}, saya mau tanya info toko.`);
 const path = Astro.url.pathname;
 const nav = [
   { href: '/', label: 'Beranda' },
@@ -17,42 +17,42 @@ const nav = [
 const active = (h: string) => (h === '/' ? path === '/' : path.startsWith(h));
 ---
 <!doctype html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <BaseHead title={title} description={description} canonicalUrl={canonicalUrl} image={image} />
 </head>
-<body class="bg-[#f9fafb] text-zinc-950 antialiased">
-  <header class="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-white/10">
+<body class="bg-zinc-950 text-zinc-100 antialiased">
+  <header class="sticky top-0 z-40 bg-zinc-950/70 backdrop-blur-xl border-b border-white/10">
     <nav class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3" aria-label="Navigasi utama">
-      <a href="/" class="font-bold tracking-tight text-sm md:text-base">{business.name}</a>
-      <div class="hidden md:flex gap-6 text-sm text-zinc-600">
+      <a href="/" class="font-bold tracking-tighter text-sm md:text-base text-white">LY<span class="text-sky-500">.</span> Kosmetik</a>
+      <div class="hidden md:flex gap-6 text-sm text-zinc-400">
         {nav.map((n) => (
-          <a href={n.href} aria-current={active(n.href) ? 'page' : undefined} class:list={["transition hover:text-zinc-950", active(n.href) && "text-zinc-950 font-semibold underline underline-offset-8"]}>{n.label}</a>
+          <a href={n.href} aria-current={active(n.href) ? 'page' : undefined} class:list={["transition hover:text-white", active(n.href) && "text-white font-semibold underline underline-offset-8 decoration-sky-700"]}>{n.label}</a>
         ))}
       </div>
-      <div class="flex md:hidden gap-4 text-sm text-zinc-600">
+      <div class="flex md:hidden gap-4 text-sm text-zinc-400">
         {nav.map((n) => (
-          <a href={n.href} aria-current={active(n.href) ? 'page' : undefined} class:list={["transition hover:text-zinc-950", active(n.href) && "text-zinc-950 font-semibold"]}>{n.label}</a>
+          <a href={n.href} aria-current={active(n.href) ? 'page' : undefined} class:list={["transition hover:text-white", active(n.href) && "text-white font-semibold"]}>{n.label}</a>
         ))}
       </div>
-      <a href={cta} class="bg-rose-700 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]" style="transition-timing-function:cubic-bezier(0.16,1,0.3,1)">Pesan via WA</a>
+      <a href={cta} class="bg-sky-700 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]" style="transition-timing-function:cubic-bezier(0.16,1,0.3,1)">Tanya via WA</a>
     </nav>
   </header>
   <main><slot /></main>
-  <footer class="mt-20 border-t border-zinc-200 bg-white">
-    <div class="max-w-7xl mx-auto px-4 py-12 grid gap-8 md:grid-cols-12">
+  <footer class="mt-20 border-t border-white/10 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
       <div class="md:col-span-7">
-        <p class="font-bold tracking-tight text-lg">{business.name}</p>
-        <p class="mt-2 text-base text-gray-600 leading-relaxed max-w-[65ch]">{business.address} — {business.hours}</p>
-        <p class="mt-2 text-sm text-zinc-500">Harga dapat berubah, konfirmasi via WA toko. Label Terverifikasi = data dicek dari sumber resmi; Estimasi = perkiraan; Info menyusul = belum ada data publik.</p>
+        <p class="font-bold tracking-tighter text-lg text-white">LY. Kosmetik Jambi</p>
+        <p class="mt-2 text-base text-zinc-400 leading-relaxed max-w-[65ch]">{business.address} — {business.hours}</p>
+        <p class="mt-2 text-sm text-zinc-500 max-w-[65ch]">Data resmi menyusul. Produk placeholder + disclaimer, bukan acuan harga.</p>
       </div>
       <div class="md:col-span-5">
-        <p class="font-semibold text-sm">Hubungi</p>
-        <div class="mt-3 flex flex-col gap-2 text-sm">
-          <a href={cta} class="underline underline-offset-4">WhatsApp ({business.phoneDisplay})</a>
-          <a href={business.mapsUrl} class="underline underline-offset-4">Google Maps — rute ke lokasi</a>
+        <p class="font-semibold text-sm text-white">Hubungi</p>
+        <div class="mt-3 flex flex-col gap-2 text-sm text-zinc-300">
+          <a href={cta} class="underline underline-offset-4">WhatsApp sementara</a>
+          <a href={business.mapsUrl} class="underline underline-offset-4">Cari di Google Maps</a>
         </div>
-        <p class="mt-6 text-xs text-zinc-400">© 2026 {business.name} — {business.city}.</p>
+        <p class="mt-6 text-xs text-zinc-600">© 2026 {business.name} — {business.city}.</p>
       </div>
     </div>
   </footer>

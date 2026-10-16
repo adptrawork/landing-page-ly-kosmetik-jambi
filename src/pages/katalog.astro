@@ -1,63 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { business, products, waLink } from '../data/business';
-const badges = ['Semua', ...Array.from(new Set(products.map((p) => p.badge)))];
 ---
-<BaseLayout title={`Katalog — ${business.title}`} description={`Katalog lengkap ${business.name}: ${products.length} produk dengan tombol pesan WA per item.`} canonicalPath="/katalog" image={business.ogImage}>
+<BaseLayout title={`Katalog — ${business.title}`} description={`Katalog sementara ${business.name}: ${products.length} item placeholder ber-disclaimer, info resmi menyusul.`} canonicalPath="/katalog" image={business.ogImage}>
   <section class="max-w-7xl mx-auto px-4 py-12 w-full min-h-[70dvh]">
-    <p class="text-sm font-medium text-rose-700">Katalog</p>
-    <h1 class="mt-2 text-3xl md:text-5xl tracking-tighter leading-none font-bold max-w-[20ch]">Semua Produk {business.name}</h1>
-    <p class="mt-3 text-base text-gray-600 leading-relaxed max-w-[65ch]">Filter berdasar label: Terverifikasi = identitas produk dicek dari sumber resmi; Estimasi = harga/foto perkiraan; Info menyusul = data belum ada. Harga dapat berubah, konfirmasi via WA toko.</p>
-    <div class="mt-6 flex flex-wrap gap-2" role="group" aria-label="Filter label produk">
-      {badges.map((b, i) => (
-        <button data-filter={b} class:list={["filter-btn border px-5 py-2.5 rounded-full text-sm font-medium transition-all", i === 0 ? "bg-zinc-950 text-white border-zinc-950" : "border-zinc-300 hover:border-zinc-950"]}>{b}</button>
+    <p class="text-sm font-medium text-sky-500 reveal">Katalog Sementara</p>
+    <h1 class="mt-2 text-4xl md:text-6xl tracking-tighter leading-none font-extrabold text-white max-w-[20ch] reveal d-1">Daftar Produk {business.name}</h1>
+    <p class="mt-3 text-base text-zinc-400 leading-relaxed max-w-[65ch]">Cockpit hemat: daftar baris tanpa kartu. Semua item placeholder + disclaimer — bukan acuan harga. Info resmi menyusul.</p>
+    <div class="refract mt-8 bg-zinc-900 border border-white/10 rounded-[2rem] divide-y divide-white/10 overflow-hidden reveal d-2">
+      {products.map((p) => (
+        <div class="flex items-center gap-4 p-4 md:p-5 transition-all duration-300 hover:bg-white/5">
+          <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-zinc-800 shrink-0"><img src={p.image} alt={p.alt} width={p.w} height={p.h} loading="lazy" class="w-full h-full object-cover" /></div>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] font-medium text-sky-500">{p.badge} • {p.stock}</p>
+            <h2 class="font-semibold tracking-tight text-white truncate">{p.name}</h2>
+            <p class="text-sm text-zinc-500">{p.price} • <span class="text-xs">{p.source}</span></p>
+          </div>
+          <a href={waLink(`Halo ${business.name}, saya mau tanya ${p.name} (${p.price}).`)} class="shrink-0 border border-white/20 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:border-white/60 active:scale-[0.98]">Tanya</a>
+        </div>
       ))}
     </div>
-    <p id="filter-count" class="mt-4 text-sm text-zinc-500" aria-live="polite"></p>
-    <div id="grid" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-      {products.map((p, i) => (
-        <article class:list={["prod", i % 2 === 1 && "md:mt-10"]} data-badge={p.badge}>
-          <div class="bg-white border border-slate-200/50 rounded-[2.5rem] p-6 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1">
-            <div class="rounded-3xl overflow-hidden bg-zinc-100 aspect-[4/3]">
-              <img src={p.image} alt={p.alt} width={p.w} height={p.h} loading="lazy" class="w-full h-full object-cover" />
-            </div>
-            <p class="mt-4 text-xs font-medium text-rose-700">{p.badge} • {p.stock}</p>
-            <h2 class="mt-1 font-semibold text-lg tracking-tight">{p.name}</h2>
-            <p class="mt-1 text-xs text-zinc-400">{p.source}</p>
-          </div>
-          <div class="mt-3 flex items-center justify-between px-2 gap-2">
-            <p class="font-mono-num font-semibold text-sm">{p.price}</p>
-            <a href={waLink(`Halo ${business.name}, saya mau pesan ${p.name} (${p.price}). Apakah ready?`)} class="bg-zinc-950 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]">Pesan via WA</a>
-          </div>
-        </article>
-      ))}
+    <div class="refract mt-6 bg-zinc-900 border border-dashed border-white/20 rounded-[2rem] p-10 text-center reveal d-3">
+      <svg class="mx-auto text-zinc-500" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11h6"/></svg>
+      <p class="mt-4 font-bold tracking-tight text-lg text-white">Belum ketemu yang dicari?</p>
+      <p class="mt-2 text-base text-zinc-400 max-w-[65ch] mx-auto">Wajar — katalog masih placeholder. Minta update info resmi atau tanya via WA sementara.</p>
+      <a href={waLink(`Halo ${business.name}, saya cari produk lain / minta update info resmi.`)} class="mt-5 inline-block bg-sky-700 text-white px-6 py-3 rounded-full text-sm font-medium active:scale-[0.98]">Tanya via WA</a>
     </div>
-    <p class="mt-8 text-sm text-zinc-500">Belum menemukan yang dicari? <a class="underline underline-offset-4 text-zinc-900" href={waLink(`Halo ${business.name}, saya cari produk lain. Boleh info katalog lengkap?`)}>Tanya katalog lengkap via WA</a></p>
   </section>
-  <script>
-    const btns = Array.from(document.querySelectorAll('.filter-btn')) as HTMLElement[];
-    const cards = Array.from(document.querySelectorAll('#grid .prod')) as HTMLElement[];
-    const count = document.getElementById('filter-count');
-    const paint = (active: string) => {
-      btns.forEach((b) => {
-        const on = b.getAttribute('data-filter') === active;
-        b.classList.toggle('bg-zinc-950', on);
-        b.classList.toggle('text-white', on);
-        b.classList.toggle('border-zinc-950', on);
-        b.classList.toggle('border-zinc-300', !on);
-      });
-    };
-    const apply = (f: string) => {
-      let n = 0;
-      cards.forEach((c) => {
-        const show = f === 'Semua' || c.getAttribute('data-badge') === f;
-        c.style.display = show ? '' : 'none';
-        if (show) n++;
-      });
-      if (count) count.textContent = `Menampilkan ${n} dari ${cards.length} produk`;
-      paint(f);
-    };
-    btns.forEach((b) => b.addEventListener('click', () => apply(b.getAttribute('data-filter') || 'Semua')));
-    apply('Semua');
-  </script>
 </BaseLayout>

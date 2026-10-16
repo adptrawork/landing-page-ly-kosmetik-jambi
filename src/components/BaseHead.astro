@@ -1,13 +1,13 @@
 ---
-interface Props {
-  title: string;
-  description: string;
-  canonicalUrl: string;
-  image?: string;
-}
+interface Props { title: string; description: string; canonicalUrl: string; image?: string; }
 import { business } from '../data/business';
 const { title, description, canonicalUrl, image = business.ogImage } = Astro.props;
 const ogImage = new URL(image, Astro.site ?? Astro.url).toString();
+const faq = [
+  { q: 'Di mana alamat Ly Kosmetik Jambi?', a: 'Alamat resmi masih menyusul dan belum terverifikasi publik. Cari Ly Kosmetik Jambi di Google Maps atau tanya via WA sementara.' },
+  { q: 'Apakah harga di website ini final?', a: 'Belum. Semua produk masih placeholder realistis dengan disclaimer. Jangan jadikan acuan harga sebelum info resmi update.' },
+  { q: 'Bagaimana cara bantu verifikasi info toko?', a: 'Kenal pemilik Ly Kosmetik? Minta update info resmi alamat, WA, dan jam via WA sementara agar halaman ini akurat.' },
+];
 ---
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -23,20 +23,20 @@ const ogImage = new URL(image, Astro.site ?? Astro.url).toString();
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:locale" content="id_ID" />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={canonicalUrl} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={ogImage} />
 <script type="application/ld+json" set:html={JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Store",
-  name: business.name,
-  url: Astro.site?.toString(),
-  image: ogImage,
-  description: description,
-  address: { "@type": "PostalAddress", streetAddress: business.address, addressLocality: business.city, addressRegion: "Jambi", addressCountry: "ID" },
-  telephone: business.phone,
-  openingHours: business.hours,
+  "@context": "https://schema.org", "@type": "Store",
+  name: business.name, url: Astro.site?.toString(), image: ogImage, description: description,
+  address: { "@type": "PostalAddress", addressLocality: business.city, addressRegion: "Jambi", addressCountry: "ID" },
+  openingHoursSpecification: { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "09:00", closes: "21:00" },
   aggregateRating: { "@type": "AggregateRating", ratingValue: business.rating, reviewCount: business.reviewCount }
+})} />
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org", "@type": "FAQPage",
+  mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } }))
 })} />

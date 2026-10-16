@@ -15,8 +15,8 @@ export const business = {
   hoursStatus: 'Info menyusul',
   instagram: '#',
   instagramLabel: 'Info menyusul',
-  title: 'Ly Kosmetik Jambi — Katalog Skincare & Info Toko Menyusul',
-  description: 'Ly Kosmetik Jambi: katalog skincare placeholder realistis. Alamat & kontak resmi menyusul — cari di Maps atau tanya via WA sementara.',
+  title: 'Ly Kosmetik Jambi — Katalog Skincare & Info Toko Terbaru',
+  description: 'Ly Kosmetik Jambi: katalog skincare & info toko segera update. Alamat, WA & jam menyusul — cari di Maps atau tanya via WA sementara.',
   canonicalPath: '/',
   ogImage: '/images/ly-hero.jpg',
 };

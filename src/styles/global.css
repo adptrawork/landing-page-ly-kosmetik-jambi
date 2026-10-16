@@ -1,31 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
+:root { --ease-premium: cubic-bezier(0.16, 1, 0.3, 1); }
 html { scroll-behavior: smooth; }
-
 body {
   font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
-  background: #f9fafb;
-  color: #09090b;
+  background: #09090b; color: #f4f4f5;
   -webkit-font-smoothing: antialiased;
 }
-
-.font-mono-num { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-
+.font-mono-num { font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
 .reveal { animation: rise 0.7s var(--ease-premium) both; }
-@keyframes rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
+.d-1 { animation-delay: 0.06s; } .d-2 { animation-delay: 0.12s; }
+.d-3 { animation-delay: 0.18s; } .d-4 { animation-delay: 0.24s; }
+.d-5 { animation-delay: 0.3s; } .d-6 { animation-delay: 0.36s; }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+/* text mask reveal — photo clipped into H1 via background-clip */
+.mask-text {
+  background-image: url('/images/ly-hero.jpg');
+  background-size: cover; background-position: center;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  animation: maskpan 18s ease-in-out infinite alternate;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal { animation: none; }
-  html { scroll-behavior: auto; }
+@keyframes maskpan { from { background-position: 20% 30%; } to { background-position: 80% 70%; } }
+/* inner refraction for dark cards */
+.refract { position: relative; }
+.refract::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0) 45%);
 }
+@media (prefers-reduced-motion: reduce) { .reveal, .mask-text { animation: none; } html { scroll-behavior: auto; } }
