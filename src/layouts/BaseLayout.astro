@@ -71,9 +71,9 @@ const active = (h: string) => (h === '/' ? path === '/' : path.startsWith(h));
     <!-- Ref: header ringkas — brand + nav utama, tanpa sticky berat -->
     <header class="border-b border-sage bg-paper">
       <nav class="shell" aria-label="Navigasi utama">
-        <input id="nav-toggle" type="checkbox" class="peer sr-only" />
-        <div class="nav-bar flex items-center justify-between gap-3 py-3">
-          <a href="/" class="flex items-baseline gap-2 leading-none" aria-label={`${business.name} — beranda`}>
+        <input id="nav-toggle" type="checkbox" class="peer sr-only" aria-hidden="true" tabindex="-1" />
+        <div class="nav-bar flex items-center justify-between gap-3 py-3 flex-wrap">
+          <a href="/" class="flex min-w-0 items-baseline gap-2 leading-none">
             <span class="text-lg font-semibold tracking-tight text-ink">LY Kosmetik</span>
             <span class="label hidden sm:inline">Grosir · Jambi</span>
           </a>
@@ -95,7 +95,7 @@ const active = (h: string) => (h === '/' ? path === '/' : path.startsWith(h));
             ))}
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex shrink-0 items-center gap-2">
             <a
               href={cta}
               rel="noopener"
@@ -105,21 +105,21 @@ const active = (h: string) => (h === '/' ? path === '/' : path.startsWith(h));
               <Icon name="whatsapp" size={16} />
               <span>Tanya via WA</span>
             </a>
-            <label
-              for="nav-toggle"
+            <button
+              type="button"
               id="nav-label"
               aria-label="Buka atau tutup menu navigasi"
-             
-             
-              class="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center border border-ink/20 text-ink transition-colors hover:border-ink md:hidden"
+              aria-expanded="false"
+              aria-controls="menu-mobile"
+              class="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center border border-ink/20 text-ink transition-colors hover:border-ink md:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
             >
               <Icon name="menu" size={20} stroke={2} class="icon-open" />
               <Icon name="close" size={20} stroke={2} class="icon-close hidden" />
-            </label>
+            </button>
           </div>
         </div>
 
-        <div class="nav-panel md:hidden" id="menu-mobile">
+        <div class="nav-panel md:hidden" id="menu-mobile" role="region" aria-label="Menu navigasi mobile">
           <div>
             <div class="flex flex-col pb-3">
               {nav.map((n) => (
@@ -225,9 +225,15 @@ const active = (h: string) => (h === '/' ? path === '/' : path.startsWith(h));
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const toggle = document.getElementById('nav-toggle') as HTMLInputElement | null;
-        const label = document.getElementById('nav-label');
-        if (toggle && label) {
-          toggle.addEventListener('change', () => label.setAttribute('aria-expanded', toggle.checked ? 'true' : 'false'));
+        const btn = document.getElementById('nav-label');
+        if (toggle && btn) {
+          const sync = () => btn.setAttribute('aria-expanded', toggle.checked ? 'true' : 'false');
+          btn.addEventListener('click', () => {
+            toggle.checked = !toggle.checked;
+            sync();
+          });
+          toggle.addEventListener('change', sync);
+          sync();
         }
         document.querySelectorAll('[data-mapfacade]').forEach((root) => {
           const btn = root.querySelector('[data-mapbtn]');

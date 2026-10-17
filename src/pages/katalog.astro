@@ -56,14 +56,14 @@ const emptyCta = waLink(`Halo ${business.name}, saya cari produk yang belum ada 
         <div role="search" class="w-full lg:w-72">
           <label for="filter-q" class="sr-only">Cari nama produk</label>
           <div class="flex items-center gap-2 border border-ink/25 px-3 focus-within:border-accent">
-            <Icon name="search" size={16} class="shrink-0 text-ink/45" />
+            <Icon name="search" size={16} class="shrink-0 text-ink/70" />
             <input
               id="filter-q"
               type="search"
               name="q"
               placeholder="Cari nama produk"
               autocomplete="off"
-              class="w-full border-0 bg-transparent py-2 text-sm text-ink placeholder:text-ink/40 focus:outline-none"
+              class="w-full border-0 bg-transparent py-2 text-sm text-ink placeholder:text-ink/65 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#27483B]"
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ const emptyCta = waLink(`Halo ${business.name}, saya cari produk yang belum ada 
 
     <!-- State kosong -->
     <div id="empty" hidden class="border border-sage bg-sage/25 px-6 py-10 text-center">
-      <Icon name="search" size={28} class="mx-auto text-ink/40" />
+      <Icon name="search" size={28} class="mx-auto text-ink/65" />
       <p class="mt-4 text-base font-medium tracking-tight text-ink">Tidak ada produk cocok</p>
       <p class="mx-auto mt-2 max-w-[52ch] text-sm leading-relaxed text-ink/65">
         Coba kata kunci lain atau ubah filter kategori. Untuk daftar lengkap, hubungi admin via WhatsApp.
