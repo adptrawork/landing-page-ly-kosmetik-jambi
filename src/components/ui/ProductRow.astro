@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import { business, waLink } from '../../data/business';
+import { productImage } from '../../data/productImages';
 
 interface P {
   name: string;
@@ -22,6 +24,9 @@ interface Props {
 
 const { p, index, group } = Astro.props;
 const no = String(index + 1).padStart(2, '0');
+// Slot thumbnail 72x72 px (lihat .h-\[4\.5rem\] di bawah) — varian 96/192/288
+// dipilih browser sesuai DPR, bukan 800x800 asli.
+const photo = productImage(p.image);
 // "jenis" diturunkan dari nama produk (menghapus akhiran "Series") — tidak mengubah data sumber.
 const type = p.name.replace(/\s*Series$/i, '');
 const msg = waLink(`Halo ${business.name}, saya mau tanya ${p.name} (${p.price}). Apakah ready stok grosir?`);
@@ -41,11 +46,11 @@ const msg = waLink(`Halo ${business.name}, saya mau tanya ${p.name} (${p.price})
 
     <div class="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-4 md:contents">
       <div class="h-[4.5rem] w-[4.5rem] overflow-hidden bg-sage/50">
-        <img
-          src={p.image}
+        <Image
+          src={photo}
           alt={p.alt}
-          width={p.w}
-          height={p.h}
+          widths={[96, 192, 288]}
+          sizes="72px"
           loading="lazy"
           decoding="async"
           class="h-full w-full object-cover"
